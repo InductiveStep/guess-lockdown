@@ -64,7 +64,7 @@ guess_table <- dat %>%
 
 Now a histogram of guesses, first with a binwidth of 1.
 
-```{r}
+```{r fig.height=4, fig.width=8}
 ggplot(dat, aes(x = guess_date)) +
   geom_histogram(binwidth=1) +
   xlab("Month") +
@@ -73,7 +73,7 @@ ggplot(dat, aes(x = guess_date)) +
 
 
 
-```{r}
+```{r fig.height=4, fig.width=8}
 ggplot(dat, aes(x = guess_date)) +
   geom_histogram(binwidth=4) +
   xlab("Month") +
