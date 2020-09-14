@@ -1,0 +1,114 @@
+---
+title: "If there's a 2nd UK lockdown, when will it be?"
+author: "Andi (almost@gmail.com, @[inductivestep](https://twitter.com/InductiveStep))"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    self_contained: no
+    toc: yes
+    toc_float: yes
+---
+
+On 14th Sept 2020 I [asked](https://twitter.com/InductiveStep/status/1305447174201921537) Twitter, "When do you think Lockdown II is happening in the UK?"
+
+Here are the results.
+
+### Load packages
+
+```{r message=FALSE}
+library(tidyverse)
+library(kableExtra)
+```
+
+And a helper:
+
+```{r}
+pretty_date <- function(d) format(d, format="%d %B %Y")
+```
+
+
+### Read and sort out the data
+
+Load in the data:
+
+```{r dat}
+dat <- read.csv("guess_lockdown_2.csv")
+```
+
+It's just a single column: a list of all the guesses:
+
+```{r}
+head(dat)
+```
+
+Let's parse that as a date:
+
+```{r guess_date}
+dat$guess_date <- parse_date(dat$Date, format = "%d %B %Y")
+head(dat)
+```
+
+### Take a look
+
+The mean guess was `r pretty_date(mean(dat$guess_date))`.
+
+The median was `r pretty_date(median(dat$guess_date))`.
+
+Here's the frequency of the dates:
+
+```{r guess_table}
+guess_table <- dat %>%
+  group_by(guess_date) %>%
+  summarise(n = n())
+```
+
+Now a histogram of guesses, first with a binwidth of 1.
+
+```{r}
+ggplot(dat, aes(x = guess_date)) +
+  geom_histogram(binwidth=1) +
+  xlab("Month") +
+  ylab("Count")
+```
+
+
+
+```{r}
+ggplot(dat, aes(x = guess_date)) +
+  geom_histogram(binwidth=4) +
+  xlab("Month") +
+  ylab("Count") + 
+  scale_y_continuous(breaks=seq(0,10,1))
+```
+
+
+
+```{r}
+mode_n <- max(guess_table$n)
+
+mode_guesses <- guess_table %>%
+  filter(n == mode_n)
+```
+
+
+The most common guess was `r pretty_date(mode_guesses$guess_date)`. 
+
+The top 5 guesses were:
+
+```{r}
+guess_table %>%
+  arrange(desc(n)) %>%
+  top_n(5) %>%
+  kbl() %>%
+  kable_paper("hover", full_width = F)
+```
+
+Finally, here's a summary...
+
+```{r}
+summary(dat$guess_date)
+```
+
+
+
+
